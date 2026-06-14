@@ -35,10 +35,10 @@
 \setbeamertemplate{footline}{
   \leavevmode
   \begin{beamercolorbox}[wd=\paperwidth,ht=0.3cm,dp=0.2cm,
-      leftskip=0.5cm,rightskip=0.5cm]{author in head/foot}
+      leftskip=0.4cm,rightskip=0.5cm]{author in head/foot}
     \hbox to \paperwidth{%
-      \scriptsize Vinicius Alves Pereira \quad|\quad
-      PFC I — CEFET-MG Divinópolis \hfill
+      \scriptsize Vinicius A. Pereira \quad|\quad
+      PFC I -   CEFET-MG \hfill
       Slide \insertframenumber{} de \inserttotalframenumber%
       \hspace{0.4cm}
     }%
@@ -85,7 +85,7 @@
     \begin{center}
         \begin{figure}
             \includegraphics[width=0.8\textwidth]{Fig/supply_chain.png}
-            \caption{Ilustração Cadeia de suprimentos.}
+            \caption{Cadeia de suprimentos no e-commerce.}
         \end{figure}
     \end{center}
 \end{frame}
@@ -93,17 +93,22 @@
 \begin{frame}{Armazenagem e Separação de Pedidos}
     \begin{center}
         \begin{figure}
-            \includegraphics[width=0.8\textwidth]{Fig/warehouse.jpg}
-            \caption{Exemplo de Armazém.}
+            \includegraphics[width=0.75\textwidth]{Fig/warehouse.jpg}
+            \caption{Armazém com corredores paralelos.}
         \end{figure}
     \end{center}
+
+    \begin{itemize}
+        \item Order Batching
+        \item Order Picking
+    \end{itemize}
 \end{frame}
 
 \begin{frame}{SBPO 25}
     \begin{center}
         \begin{figure}
             \includegraphics[width=\textwidth]{Fig/sbpo.png}
-            \caption{Ilustração SBPO 25.}
+            \caption{Desafio SBPO 2025 — Mercado Livre.}
         \end{figure}
     \end{center}
 \end{frame}
@@ -119,14 +124,19 @@
     \bigskip
     \textbf{Objetivos Específicos:}
     \begin{enumerate}
-        \item Revisão da literatura do OBP
+        \item Formalizar o PSP e situá-lo na literatura do OBP
         \item Implementar heurística gulosa
         \item Conduzir experimentos computacionais
-        \item Estuar o compromisso qualidade $\times$ tempo via Fronteira de Pareto
+        \item Estudar o compromisso qualidade $\times$ tempo via Fronteira de Pareto
     \end{enumerate}
 \end{frame}
 
+% ============================================================
+\section{Referencial Teórico}
+% ============================================================
+
 \begin{frame}{Literatura do OBP — Contexto e Lacuna}
+    \small
     \begin{center}
         \begin{tabular}{lcc}
             \toprule
@@ -138,38 +148,40 @@
             \bottomrule
         \end{tabular}
     \end{center}
-    \smallskip
 
+    \begin{alertblock}{Lacuna identificada}
+        No contexto do PSP, os trabalhos existentes focam em reformulações
+        exatas e estratégias híbridas com \textit{solvers}. Não há estudo
+        comparativo sistemático de heurísticas considerando
+        qualidade $\times$ tempo.
+    \end{alertblock}
 \end{frame}
 
-% ============================================================
-\section{Referencial Teórico}
-% ============================================================
-
-\begin{frame}{Otimização — Quatro Elementos do Modelo}
+\begin{frame}{Otimização}
     \small
-    \begin{columns}
+    \begin{columns}[t]
         \begin{column}{0.48\textwidth}
             \begin{block}{1. Variáveis de Decisão}
                 Grandezas sob controle do decisor.
             \end{block}
-            \vspace{0.5cm}
+            \vspace{0.2cm}
             \begin{block}{3. Função Objetivo}
                 Critério a ser maximizado ou minimizado.
             \end{block}
         \end{column}
         \begin{column}{0.48\textwidth}
             \begin{block}{2. Constantes / Parâmetros}
-                Dados conhecidos \emph{a priori}.
+                Dados conhecidos \emph{a priori}. \\
+                \vspace{0.35cm}
             \end{block}
-            \vspace{0.5cm}
+            \vspace{0.2cm}
             \begin{block}{4. Restrições}
                 Condições que delimitam as soluções viáveis.
             \end{block}
         \end{column}
     \end{columns}
 
-    \vspace{0.8cm}
+    \vspace{0.4cm}
     \begin{alertblock}{}
         Modelos complexos de otimização frequentemente geram problemas \textbf{NP-difíceis}.
         Essa limitação computacional motiva o uso de métodos aproximados, como as
@@ -189,7 +201,6 @@
     \begin{itemize}
         \item Constroem a solução em \emph{uma única passagem}
         \item Decisões locais guiadas por critério guloso
-        \item Sem revisão das escolhas já feitas
         \item[$\Rightarrow$] Rápidas, porém limitadas em qualidade
     \end{itemize}
 \end{frame}
@@ -201,16 +212,13 @@
     \end{block}
 
     \bigskip
-    \begin{columns}
+    \begin{columns}[t]
         \begin{column}{0.50\textwidth}
             \textbf{Conceitos centrais:}
             \begin{itemize}
                 \item Representação da solução
                 \item Vizinhança e movimento
                 \item Busca local e ótimo local
-                      \newline
-                      \newline
-                      \newline
             \end{itemize}
         \end{column}
         \begin{column}{0.46\textwidth}
@@ -230,15 +238,18 @@
 \begin{frame}{Fronteira de Pareto}
     \begin{center}
         \begin{figure}
-            \includegraphics[width=0.75\textwidth]{Fig/exemplo_pareto.png}
+            \includegraphics[width=0.6\textwidth]{Fig/exemplo_pareto.png}
             \caption{Exemplo de Fronteira de Pareto.}
         \end{figure}
     \end{center}
     \vspace{-0.3cm}
     \small
+
+    Dizemos que uma solução x domina uma solução y se:
+
     \begin{itemize}
-        \item $C_1$, $C_2$, $C_3$ — \textbf{não dominados} (Fronteira de Pareto)
-        \item $C_4$ e $C_5$ — dominados; a curva tracejada delimita a fronteira
+        \item x é pelo menos tão boa quanto y em todos os objetivos;
+        \item x é estritamente melhor em pelo menos um objetivo.
     \end{itemize}
 \end{frame}
 
@@ -277,69 +288,60 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Exemplo Numérico — Três Soluções Viáveis}
-    \small
-    Instância com 5 pedidos, 5 itens, 5 corredores;
-    $\mathrm{LB}=5$, $\mathrm{UB}=12$
-
-    \bigskip
-    \begin{center}
-        \begin{tabular}{c|c|c|c|c}
-            \toprule
-            \textbf{Solução} & $\mathcal{O}'$          & $\mathcal{A}'$
-                             & \textbf{Unidades}       & \textbf{Objetivo}                       \\
-            \midrule
-            A                & $\{0,4\}$               & $\{0,1\}$         & 5  & $5/2 = 2{,}5$  \\
-            B                & $\{0,2,3\}$             & $\{1,3,4\}$       & 12 & $12/3 = 4{,}0$ \\
-            \rowcolor{verde!20}
-            \textbf{C}       & $\{0,1,2,4\}$           & $\{1,3\}$         & 10
-                             & $\mathbf{10/2 = 5{,}0}$                                           \\
-            \bottomrule
-        \end{tabular}
-    \end{center}
-
+\begin{frame}{Características dos Datasets}
+    \begin{table}[H]
+        \centering
+        \begin{minipage}{\textwidth}
+            \resizebox{\textwidth}{!}{
+                \begin{tabular}{l|l|l|l}
+                    \hline
+                    Dataset & Média de Pedidos & Média de Itens & Média de Corredores \\ \hline
+                    a       & 3054.20          & 3179.25        & 204.45              \\
+                    b       & 14824.40         & 13527.30       & 320.80              \\
+                    x       & 23835.87         & 20622.27       & 333.47              \\ \hline
+                \end{tabular}
+            }
+            \caption{Médias por Dataset}
+        \end{minipage}
+    \end{table}
 \end{frame}
 
 % ============================================================
 \section{Metodologia}
 % ============================================================
 
-\begin{frame}{Algoritmo Guloso — Fluxo de Execução}
+\begin{frame}{Algoritmo Guloso}
     \small
-    \begin{flushleft}
-        \textbf{Etapa 1: Seleção de Pedidos}
-        \begin{enumerate}
-            \item Agregar estoque de todos os corredores
-            \item Ordenar pedidos pelo critério \texttt{order}
-            \item Tentar incorporar os pedidos na sequência ordenada
-        \end{enumerate}
-    \end{flushleft}
-    \textbf{Etapa 2 — Seleção de Corredores} \\
-    \medskip
+    \textbf{Etapa 1: Seleção de Pedidos}
+    \begin{enumerate}
+        \item Ordenar pedidos pelo critério configurável (\texttt{order})
+        \item Incorporar pedidos enquanto $\leq$ UB e há estoque
+    \end{enumerate}
+
+    \bigskip
+    \textbf{Etapa 2: Seleção de Corredores}
     \begin{itemize}
-        \item \textbf{Opção 1}: Pontuação estática
-        \item \textbf{Opção 2}: Pontuação recalculada a cada iteração
-        \item \textbf{Opção 3}: Minimiza $|\mathcal{A}'|$ via CP-SAT (OR-Tools)
+        \item \textbf{Simples} (\texttt{simple}): pontuação estática, ordenação única
+        \item \textbf{Adaptativa} (\texttt{multi}): pontuação recalculada a cada iteração
+        \item \textbf{Exata} (\texttt{exact}): minimiza $|\mathcal{A}'|$
     \end{itemize}
 \end{frame}
 
 \begin{frame}{Variações do Algoritmo Guloso}
     \small
-    \textbf{Variações de ordenação de pedidos:}
+    \textbf{Critérios de ordenação de pedidos:}
     \begin{itemize}
         \item Aleatória
-        \item Ordenar pelo total de unidades (Crescente e Decrescente)
-        \item Ordenar pela similaridade
+        \item Total de Unidades (Crescente e Decrescente)
+        \item Similaridade de Jaccard (similar e diferente)
               \begin{itemize}
-                  \item Pedido aleatório
-                  \item Tamanho (maior e menor pedido)
-                  \item Mais compartilhado
-                        \newline
-                        \newline
+                  \item Ponderada e não ponderada
+                  \item Pedido-semente: aleatório, maior, menor ou mais compartilhado
               \end{itemize}
     \end{itemize}
 
-    Total de 57 variações
+    \medskip
+    Resultando em um total de \textbf{57 variações}
 \end{frame}
 
 \begin{frame}{Experimentos}
@@ -349,14 +351,15 @@
         \item \textbf{Dataset A}: 20 instâncias de menor porte
         \item \textbf{5 réplicas} por variação
         \item Objetivo: identificar variações promissoras
-        \item Critério: Fronteira de Pareto\\
-              (\textit{gap} $\times$ tempo)
+        \item \textit{Gap} relativo: $\frac{f^* - f}{f^*}$, onde $f^*$ é a
+              Melhor Solução Conhecida (MSC) do desafio
+        \item Critério: Fronteira de Pareto (\textit{gap} $\times$ tempo)
     \end{itemize}
     \textbf{Fase 2: Avaliação (PFC II)}
     \begin{itemize}
         \item \textbf{Datasets B e X}: instâncias de maior porte
         \item Candidatos selecionados + novos algoritmos
-        \item Análise estatística formal (ANOVA, IC)
+        \item Análise estatística dos resultados
     \end{itemize}
 \end{frame}
 
@@ -366,25 +369,25 @@
 
 \begin{frame}{Visão Geral}
     \begin{center}
-        \includegraphics[width=0.92\textwidth]{Fig/simple_gap_vs_exec_time.png}
+        \includegraphics[width=\textwidth]{Fig/simple_gap_vs_exec_time.png}
     \end{center}
 \end{frame}
 
 \begin{frame}{Seleção de Corredores}
     \begin{center}
-        \includegraphics[width=0.92\textwidth]{Fig/gap_greedy_type.png}
+        \includegraphics[width=\textwidth]{Fig/gap_greedy_type.png}
     \end{center}
 \end{frame}
 
 \begin{frame}{Ordenação de Pedidos}
     \begin{center}
-        \includegraphics[width=0.92\textwidth]{Fig/gap_order_type.png}
+        \includegraphics[width=\textwidth]{Fig/gap_order_type.png}
     \end{center}
 \end{frame}
 
 \begin{frame}{Fronteira de Pareto}
     \begin{center}
-        \includegraphics[width=0.88\textwidth]{Fig/simple_pareto.png}
+        \includegraphics[width=\textwidth]{Fig/simple_pareto.png}
     \end{center}
 \end{frame}
 
@@ -393,9 +396,17 @@
 % ============================================================
 
 \begin{frame}{Discussão dos Resultados}
-
+    \small
     \begin{itemize}
-        \item
+        \item Ordenação decrescente como fator dominante na qualidade
+
+        \item Seleção de corredores $\Rightarrow$ \textit{trade-off} controlável
+
+        \item \textit{Gaps} de $0{,}69$ a $0{,}70$ (soluções capturam $\approx 30\%$ da MSC)
+              \begin{itemize}
+                  \item Esperado para heurísticas construtivas puras (sem busca local)
+              \end{itemize}
+        \item Similaridade não superou ordenação por volume
     \end{itemize}
 \end{frame}
 
@@ -403,32 +414,11 @@
 \section{Conclusão e Próximos Passos}
 % ============================================================
 
-\begin{frame}{Conclusão — PFC I}
-    \small
-    \textbf{Objetivos cumpridos integralmente:}
-    \begin{enumerate}
-        \item Formalização do PSP e enquadramento na literatura do OBP
-        \item Implementação da heurística gulosa com \textbf{57 variações}
-              (7 critérios $\times$ 3 estratégias de corredores)
-        \item Identificação das configurações Pareto-ótimas:
-              \textbf{A4, A5 e A6}
-    \end{enumerate}
-
-    \bigskip
-    \begin{block}{Resultado central}
-        A ordenação decrescente (\texttt{desc}) é o fator dominante
-        na qualidade. A estratégia de corredores opera um
-        \textbf{\textit{trade-off} controlável}: de A6 (rápido) a
-        A4 (melhor qualidade), todos não dominados pela fronteira
-        de Pareto.
-    \end{block}
-\end{frame}
-
 \begin{frame}{Próximos Passos}
     \begin{enumerate}
         \item Heurísticas por seleção de corredores
         \item Meta-heurísticas
-        \item Fase 2 — Datasets B e X com análise estatística
+        \item Fase 2 dos experimentos
     \end{enumerate}
 \end{frame}
 
