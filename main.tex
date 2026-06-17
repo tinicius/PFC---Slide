@@ -107,7 +107,7 @@
     \begin{center}
         \begin{figure}
             \includegraphics[width=\textwidth]{Fig/sbpo.png}
-            \caption{Desafio SBPO 2025 — Mercado Livre.}
+            \caption{Desafio SBPO 2025 + Mercado Livre.}
         \end{figure}
     \end{center}
 \end{frame}
@@ -115,7 +115,7 @@
 \begin{frame}{Objetivos}
     \small
     \begin{block}{Objetivo Geral}
-        Implementar e avaliar experimentalmente abordagens heurísticas para o
+        Implementar e avaliar experimentalmente abordagens heurísticas e meta-heurísticas para o
         \textbf{Problema de Seleção de Pedidos Ótima (PSP)}, utilizando as
         instâncias do Desafio SBPO 2025.
     \end{block}
@@ -149,10 +149,7 @@
     \end{center}
 
     \begin{alertblock}{Lacuna identificada}
-        No contexto do PSP, os trabalhos existentes focam em reformulações
-        exatas e estratégias híbridas com \textit{solvers}. Não há estudo
-        comparativo sistemático de heurísticas considerando
-        qualidade $\times$ tempo.
+        No contexto do PSP, não há um estudo comparativo sistemático das abordagens que considere a relação entre qualidade e tempo.
     \end{alertblock}
 \end{frame}
 
@@ -401,9 +398,9 @@
 
         \item Seleção de corredores $\Rightarrow$ \textit{trade-off} controlável
 
-        \item \textit{Gaps} de $0{,}69$ a $0{,}70$ (soluções capturam $\approx 30\%$ da MSC)
+        \item Soluções capturam $\approx 30\%$ da MSC
               \begin{itemize}
-                  \item Esperado para heurísticas construtivas puras (sem busca local)
+                  \item Esperado para heurísticas construtivas
               \end{itemize}
         \item Similaridade não superou ordenação por volume
     \end{itemize}
