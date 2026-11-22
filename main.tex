@@ -1,5 +1,5 @@
 % ============================================================
-%  Apresentação — Banca PFC I
+%  Apresentação — Banca PFC II
 %  Avaliação Experimental de Heurísticas para o PSP
 %  Vinicius Alves Pereira — CEFET-MG Divinópolis — 2026
 % ============================================================
@@ -24,12 +24,18 @@
 \usepackage{ragged2e}
 \usepackage{booktabs}
 \usepackage{colortbl}
+\usepackage{multirow}
 \usepackage{array}
 \usepackage{amsmath}
 \usepackage{amssymb}
 
 % ---------- Sem ícones de navegação ----------
 \setbeamertemplate{navigation symbols}{}
+
+% ---------- Legendas de figuras ----------
+\setbeamertemplate{caption}[numbered]
+\setbeamerfont{caption}{size=\scriptsize}
+\setbeamerfont{caption name}{size=\scriptsize}
 
 % ---------- Rodapé ----------
 \setbeamertemplate{footline}{
@@ -38,7 +44,7 @@
       leftskip=0.4cm,rightskip=0.5cm]{author in head/foot}
     \hbox to \paperwidth{%
       \scriptsize Vinicius A. Pereira \quad|\quad
-      PFC I -   CEFET-MG \hfill
+      PFC II -   CEFET-MG \hfill
       Slide \insertframenumber{} de \inserttotalframenumber%
       \hspace{0.4cm}
     }%
@@ -72,350 +78,341 @@
     \titlepage
 \end{frame}
 
-% ---- Sumário ----
-\begin{frame}{Roteiro}
-    \tableofcontents
-\end{frame}
-
 % ============================================================
 \section{Introdução}
 % ============================================================
 
-\begin{frame}{E-commerce e Cadeias de Suprimentos}
-    \begin{center}
-        \begin{figure}
-            \includegraphics[width=0.8\textwidth]{Fig/supply_chain.png}
-            \caption{Cadeia de suprimentos no e-commerce.}
-        \end{figure}
-    \end{center}
+\begin{frame}{Contexto}
+    \small
+    \begin{columns}[c]
+        \begin{column}{0.52\textwidth}
+            \begin{itemize}
+                \item \textit{E-commerce} brasileiro: R\$ 160,3 bi no 1º semestre de 2024 (+18,7\%)
+                \item \textit{Picking} responde por até 55\% do custo operacional do armazém
+                \item Cerca de metade do tempo do operador é deslocamento
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.45\textwidth}
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.85\textwidth]{Fig/warehouse.jpg}
+                \caption{Armazém com estantes de \textit{picking}.}
+            \end{figure}
+        \end{column}
+    \end{columns}
 \end{frame}
 
-\begin{frame}{Armazenagem e Separação de Pedidos}
-    \begin{center}
-        \begin{figure}
-            \includegraphics[width=0.75\textwidth]{Fig/warehouse.jpg}
-            \caption{Armazém com corredores paralelos.}
-        \end{figure}
-    \end{center}
-
+\begin{frame}{Desafio SBPO 2025}
+    \small
+    \begin{figure}
+        \centering
+        \includegraphics[width=1\textwidth]{Fig/sbpo.png}
+        \caption{Primeiro Desafio Mercado Livre de Otimização, realizado no 57º SBPO (2025).}
+    \end{figure}
     \begin{itemize}
-        \item Order Batching
+        \item Problema fracionário de seleção de pedidos (PSP)
+        \item Instâncias propostas para o desafio
     \end{itemize}
 \end{frame}
 
-\begin{frame}{SBPO 25}
-    \begin{center}
-        \begin{figure}
-            \includegraphics[width=\textwidth]{Fig/sbpo.png}
-            \caption{Desafio SBPO 2025 + Mercado Livre.}
-        \end{figure}
-    \end{center}
+% ============================================================
+\section{Problema}
+% ============================================================
+
+\begin{frame}{O PSP e sua formulação}
+    \footnotesize
+    % \setlength{\abovedisplayskip}{4pt}\setlength{\belowdisplayskip}{4pt}
+
+    \begin{align*}
+        \max \quad & \frac{\sum_{o \in \mathcal{O}} \sum_{i \in \mathcal{I}_o} q_{oi}\, x_o}{\sum_{a \in \mathcal{A}} y_a}
+                   &                                                                                                                             & \text{(unidades por corredor)}    \\[2pt]
+        \text{s.a.} \quad
+                   & \mathrm{LB} \leq \textstyle\sum_{o \in \mathcal{O}} \sum_{i \in \mathcal{I}_o} q_{oi}\, x_o \leq \mathrm{UB}
+                   &                                                                                                                             & \text{(tamanho da \textit{wave})} \\
+                   & \textstyle\sum_{o \in \mathcal{O}} q_{oi}\, x_o \leq \sum_{a \in \mathcal{A}} e_{ai}\, y_a, \quad \forall i \in \mathcal{I}
+                   &                                                                                                                             & \text{(disponibilidade)}          \\
+                   & x_o \in \{0,1\},\ \forall o \in \mathcal{O}; \quad y_a \in \{0,1\},\ \forall a \in \mathcal{A}
+                   &                                                                                                                             & \text{(integralidade)}
+    \end{align*}
+
+    \medskip
+    \begin{itemize}
+        \item $\mathcal{O}$: pedidos; \ $\mathcal{I}_o$: itens do pedido $o$; \ $\mathcal{I}$: itens; \ $\mathcal{A}$: corredores
+        \item $q_{oi}$: unidades do item $i$ pedidas por $o$; \ $e_{ai}$: unidades do item $i$ no corredor $a$
+        \item $x_o = 1$ se o pedido $o$ compõe a \textit{wave}; \ $y_a = 1$ se o corredor $a$ é visitado
+    \end{itemize}
+
 \end{frame}
+
+\begin{frame}{Exemplo}
+    \vspace{-0.3cm}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth,height=0.72\textheight,keepaspectratio]{Fig/exemplo_psp_waves.pdf}
+        \caption{Exemplo do PSP: \textit{backlog}, corredores e três \textit{waves} viáveis ($\mathrm{LB} = 5$, $\mathrm{UB} = 12$).}
+    \end{figure}
+\end{frame}
+
+% ============================================================
+\section{Métodos}
+% ============================================================
 
 \begin{frame}{Objetivos}
-    \small
-    \begin{block}{Objetivo Geral}
-        Implementar e avaliar experimentalmente abordagens heurísticas e meta-heurísticas para o
-        \textbf{Problema de Seleção de Pedidos Ótima (PSP)}, utilizando as
-        instâncias do Desafio SBPO 2025.
-    \end{block}
+    \footnotesize
+    \textbf{Objetivo Geral:} Implementar e avaliar experimentalmente abordagens heurísticas e
+    meta-heurísticas para o Problema de Seleção de Pedidos Ótima (PSP) com as
+    instâncias reais do Desafio SBPO 2025 como \textit{benchmark} padronizado.
 
-    \bigskip
+    \medskip
     \textbf{Objetivos Específicos:}
     \begin{enumerate}
-        \item Formalizar o PSP e situá-lo na literatura do OBP
-        \item Implementar heurística gulosa
-        \item Conduzir experimentos computacionais
-        \item Estudar o compromisso qualidade $\times$ tempo via Fronteira de Pareto
+        \item Formalizar o PSP e situá-lo na literatura do \textit{Order Batching Problem}
+        \item Desenvolver a heurística construtiva \textit{OrderBased}, com composição definida pela fronteira de Pareto
+        \item Desenvolver a heurística construtiva \textit{AisleBased} e compará-la ao \textit{OrderBased}
+        \item Propor e implementar a meta-heurística ILS-VND, partindo da solução do \textit{AisleBased}
+        \item Avaliar os métodos nas instâncias A, B e X frente às MSC e ao método de referência
     \end{enumerate}
 \end{frame}
 
-% ============================================================
-\section{Referencial Teórico}
-% ============================================================
-
-\begin{frame}{Literatura do OBP — Contexto e Lacuna}
+\begin{frame}{\textit{OrderBased}}
     \small
-    \begin{center}
-        \begin{tabular}{lcc}
-            \toprule
-            \textbf{Método}  & \textbf{Aras (2022)} & \textbf{Pardo (2024)} \\
-            \midrule
-            Meta-heurísticas & 51\%                 & 61{,}6\%              \\
-            Heurísticas      & 18\%                 & 36{,}8\%              \\
-            Métodos Exatos   & 17\%                 & 27{,}2\%              \\
-            \bottomrule
-        \end{tabular}
-    \end{center}
+    \textbf{\textit{OrderBased}:} heurística construtiva que escolhe primeiro os pedidos da \textit{wave} e só depois
+    os corredores que cobrem a sua demanda.
 
-    \begin{alertblock}{Lacuna identificada}
-        No contexto do PSP, não há um estudo comparativo sistemático das abordagens que considere a relação entre qualidade e tempo.
-    \end{alertblock}
-\end{frame}
-
-\begin{frame}{Otimização}
-    \small
-    \begin{columns}[t]
-        \begin{column}{0.48\textwidth}
-            \begin{block}{1. Variáveis de Decisão}
-                Grandezas sob controle do decisor.
-            \end{block}
-            \vspace{0.2cm}
-            \begin{block}{3. Função Objetivo}
-                Critério a ser maximizado ou minimizado.
-            \end{block}
-        \end{column}
-        \begin{column}{0.48\textwidth}
-            \begin{block}{2. Constantes / Parâmetros}
-                Dados conhecidos \emph{a priori}. \\
-                \vspace{0.35cm}
-            \end{block}
-            \vspace{0.2cm}
-            \begin{block}{4. Restrições}
-                Condições que delimitam as soluções viáveis.
-            \end{block}
-        \end{column}
-    \end{columns}
-
-    \vspace{0.4cm}
-    \begin{alertblock}{}
-        Modelos complexos de otimização frequentemente geram problemas \textbf{NP-difíceis}.
-        Essa limitação computacional motiva o uso de métodos aproximados, como as
-        \textbf{heurísticas e meta-heurísticas}.
-    \end{alertblock}
-\end{frame}
-
-\begin{frame}{Heurísticas Construtivas}
-    \small
-    \begin{block}{O que são?}
-        Procedimentos aproximados que obtêm soluções de boa qualidade em
-        tempo reduzido, \textbf{sem garantia de otimalidade}.
-    \end{block}
-
-    \bigskip
-    \textbf{Características:}
-    \begin{itemize}
-        \item Constroem a solução em \emph{uma única passagem}
-        \item Decisões locais guiadas por critério guloso
-        \item[$\Rightarrow$] Rápidas, porém limitadas em qualidade
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Meta-heurísticas}
-    \small
-    \begin{block}{O que são?}
-        Métodos que utilizam estratégias capazes de \textbf{escapar de ótimos locais} e explorar robustamente o espaço de soluções.
-    \end{block}
-
-    \bigskip
-    \begin{columns}[t]
-        \begin{column}{0.50\textwidth}
-            \textbf{Conceitos centrais:}
-            \begin{itemize}
-                \item Representação da solução
-                \item Vizinhança e movimento
-                \item Busca local e ótimo local
-            \end{itemize}
-        \end{column}
-        \begin{column}{0.46\textwidth}
-            \textbf{Exemplos:}
-            \begin{itemize}
-                \item Busca Tabu
-                \item GRASP
-                \item Simulated Annealing
-                \item Algoritmos Genéticos
-                \item Colônia de Formigas
-            \end{itemize}
-        \end{column}
-    \end{columns}
-
-\end{frame}
-
-\begin{frame}{Fronteira de Pareto}
-    \begin{center}
-        \begin{figure}
-            \includegraphics[width=0.6\textwidth]{Fig/exemplo_pareto.png}
-            \caption{Exemplo de Fronteira de Pareto.}
-        \end{figure}
-    \end{center}
-    \vspace{-0.3cm}
-    \small
-
-    Dizemos que uma solução x domina uma solução y se:
-
-    \begin{itemize}
-        \item x é pelo menos tão boa quanto y em todos os objetivos;
-        \item x é estritamente melhor em pelo menos um objetivo.
-    \end{itemize}
-\end{frame}
-
-% ============================================================
-\section{Definição do Problema}
-% ============================================================
-
-\begin{frame}{O Problema de Seleção de Pedidos Ótima (PSP)}
-    \small
-    \textbf{Dados:} backlog de pedidos, estoque nos corredores,
-    limites $[\mathrm{LB}, \mathrm{UB}]$
-
-    \bigskip
-    \textbf{Decidir simultaneamente:}
-    \begin{enumerate}
-        \item Subconjunto de pedidos $\mathcal{O}' \subseteq \mathcal{O}$
-              que compõe a \textit{wave}
-        \item Subconjunto de corredores $\mathcal{A}' \subseteq \mathcal{A}$
-              a visitar
-    \end{enumerate}
-
-    \bigskip
-    \textbf{Maximizar:}
-    \[
-        \max \quad
-        \frac{\displaystyle\sum_{o \in \mathcal{O}'}\sum_{i \in \mathcal{I}_o} u_{oi}}
-        {\displaystyle|\mathcal{A}'|}
-    \]
-
-    \smallskip
-    \textbf{Restrições:}
-    \begin{itemize}
-        \item Tamanho mínimo e máximo da \textit{wave}
-        \item Viabilidade física: os corredores visitados devem cobrir
-              toda a demanda
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Características dos Datasets}
-    \begin{table}[H]
+    \medskip
+    \begin{figure}
         \centering
-        \begin{minipage}{\textwidth}
-            \resizebox{\textwidth}{!}{
-                \begin{tabular}{l|l|l|l}
-                    \hline
-                    Dataset & Média de Pedidos & Média de Itens & Média de Corredores \\ \hline
-                    a       & 3054.20          & 3179.25        & 204.45              \\
-                    b       & 14824.40         & 13527.30       & 320.80              \\
-                    x       & 23835.87         & 20622.27       & 333.47              \\ \hline
-                \end{tabular}
-            }
-            \caption{Médias por Dataset}
-        \end{minipage}
+        \includegraphics[width=\textwidth,height=0.58\textheight,keepaspectratio]{Fig/fluxo_orderbased.pdf}
+        \caption{Fluxograma da heurística \textit{OrderBased}.}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{\textit{AisleBased}}
+    \small
+    \textbf{\textit{AisleBased}:} escolhe primeiro os corredores e depois empacota os pedidos que o estoque acumulado atende.
+
+    \medskip
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth,height=0.58\textheight,keepaspectratio]{Fig/fluxo_aislebased.pdf}
+        \caption{Fluxograma da heurística \textit{AisleBased}.}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{ILS-VND}
+    \small
+    \textbf{ILS-VND:} meta-heurística que refina a solução do \textit{AisleBased}, alternando perturbação guiada
+    e busca local VND.
+
+    \medskip
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth,height=0.58\textheight,keepaspectratio]{Fig/fluxo_ilsvnd.pdf}
+        \caption{Fluxograma da meta-heurística ILS-VND.}
+    \end{figure}
+\end{frame}
+
+% ============================================================
+\section{Experimentos e Resultados}
+% ============================================================
+
+\begin{frame}{Datasets e instâncias}
+    % \small
+    % \begin{itemize}
+    %     \item Instâncias reais do Mercado Livre, disponibilizadas no Desafio SBPO 2025
+    %     \item 50 instâncias divididas em três datasets: A (20), B (15) e X (15)
+    %     \item A: em média 3.054 pedidos, 3.179 itens e 204 corredores
+    %     \item B: em média 14.824 pedidos, 13.527 itens e 321 corredores
+    %     \item X: em média 23.836 pedidos, 20.622 itens e 333 corredores
+    % \end{itemize}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{Fig/Boxplot_instancias.png}
+        \caption{Distribuição do número de pedidos, itens e corredores por dataset.}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Configuração experimental}
+    \begin{itemize}
+        \item 50 instâncias (A: 20, B: 15, X: 15); 30 execuções, limite de 600 s
+        \item Java 21, Intel i5-13420H, 16 GB
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Protocolo experimental}
+    % \footnotesize
+
+    \textbf{RPD} (desvio percentual relativo à MSC)
+    \[
+        \text{RPD} = \frac{f^\ast - f}{f^\ast} \times 100\%
+    \]
+    $f^\ast$: Melhor Solução Conhecida (MSC);
+
+    $f$: objetivo obtido pelo algoritmo.
+
+    \bigskip
+
+    \footnotesize
+    \begin{columns}[t]
+        \begin{column}{0.48\textwidth}
+            \textbf{Friedman} (teste global)
+            \[
+                \chi^2_F = \frac{12N}{k(k+1)} \Bigl[\sum_{j=1}^{k} R_j^2 - \frac{k(k+1)^2}{4}\Bigr]
+            \]
+            Ranqueia os $k = 3$ algoritmos em cada uma das $N = 50$ instâncias;
+
+            $R_j$: \textit{ranking} médio.
+
+            $H_0$: algoritmos equivalentes.
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Wilcoxon} (par a par, sobre o RPD)
+            \[
+                W = \min\Bigl(\sum_{d_i > 0} \text{posto}(|d_i|),\ \sum_{d_i < 0} \text{posto}(|d_i|)\Bigr)
+            \]
+            $d_i$: diferença de RPD do par na instância $i$. Usa sinal e magnitude; $p$-valores ajustados por Holm ($\alpha = 0{,}05$).
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Visão geral}
+    \centering
+    \resizebox{\textwidth}{!}{%
+        \begin{tabular}{l l r r c c r}
+            \toprule
+            \textbf{Dataset ($N$)}               & \textbf{Algoritmo}       & \textbf{RPD Médio $\pm$ DP (\%)} & \textbf{RPD Med. (\%)} & \textbf{RPD $\le 1\%$} & \textbf{\#MSC} & \textbf{Tempo Médio $\pm$ DP (s)} \\
+            \midrule
+            \multirow{4}{*}{\textbf{A (20)}}     & \textit{OrderBased}      & 69,30 $\pm$ 27,29                & 80,22                  & 1/20                   & 1/20           & 13,45 $\pm$ 15,02                 \\
+                                                 & \textit{AisleBased}      & 6,15 $\pm$ 10,39                 & 0,11                   & 12/20                  & 10/20          & 0,43 $\pm$ 0,45                   \\
+                                                 & ILS-VND                  & 0,15 $\pm$ 0,49                  & 0,00                   & 19/20                  & 17/20          & 317,19 $\pm$ 270,45               \\
+                                                 & Santos e Baldotto (2025) & 0,02 $\pm$ 0,06                  & 0,00                   & 20/20                  & 18/20          & 70,49 $\pm$ 151,10                \\
+            \midrule
+            \multirow{4}{*}{\textbf{B (15)}}     & \textit{OrderBased}      & 88,75 $\pm$ 8,28                 & 92,36                  & 0/15                   & 0/15           & 19,45 $\pm$ 13,20                 \\
+                                                 & \textit{AisleBased}      & 2,16 $\pm$ 2,45                  & 0,85                   & 8/15                   & 4/15           & 2,41 $\pm$ 3,05                   \\
+                                                 & ILS-VND                  & 0,03 $\pm$ 0,06                  & 0,00                   & 15/15                  & 10/15          & 568,40 $\pm$ 90,13                \\
+                                                 & Santos e Baldotto (2025) & 0,02 $\pm$ 0,06                  & 0,00                   & 15/15                  & 12/15          & 222,19 $\pm$ 236,98               \\
+            \midrule
+            \multirow{4}{*}{\textbf{X (15)}}     & \textit{OrderBased}      & 90,40 $\pm$ 7,57                 & 94,43                  & 0/15                   & 0/15           & 15,68 $\pm$ 13,68                 \\
+                                                 & \textit{AisleBased}      & 1,98 $\pm$ 2,32                  & 0,70                   & 8/15                   & 2/15           & 3,76 $\pm$ 3,87                   \\
+                                                 & ILS-VND                  & 0,38 $\pm$ 0,84                  & 0,00                   & 13/15                  & 9/15           & 592,95 $\pm$ 3,19                 \\
+                                                 & Santos e Baldotto (2025) & 0,02 $\pm$ 0,06                  & 0,00                   & 15/15                  & 13/15          & 319,70 $\pm$ 266,95               \\
+            \midrule
+            \multirow{4}{*}{\textbf{Geral (50)}} & \textit{OrderBased}      & 81,47 $\pm$ 20,63                & 88,75                  & 1/50                   & 1/50           & 15,92 $\pm$ 14,04                 \\
+                                                 & \textit{AisleBased}      & 3,70 $\pm$ 7,02                  & 0,73                   & 28/50                  & 16/50          & 2,02 $\pm$ 3,01                   \\
+                                                 & ILS-VND                  & 0,18 $\pm$ 0,56                  & 0,00                   & 47/50                  & 36/50          & 475,28 $\pm$ 218,59               \\
+                                                 & Santos e Baldotto (2025) & 0,02 $\pm$ 0,06                  & 0,00                   & 50/50                  & 43/50          & 190,77 $\pm$ 237,81               \\
+            \bottomrule
+        \end{tabular}%
+    }
+
+    \medskip
+    {\scriptsize Cada instância é representada pela média de 30 sementes; DP calculado entre instâncias.\par}
+\end{frame}
+
+\begin{frame}{Distribuição do RPD}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth,height=0.72\textheight,keepaspectratio]{Fig/boxplot_rpd.pdf}
+        \caption{Distribuição do RPD médio por instância: (a) visão global dos quatro algoritmos e (b) ampliação sobre \textit{AisleBased}, ILS-VND e Santos e Baldotto (2025). Os losangos brancos indicam a média.}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Tempo $\times$ qualidade}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth,height=0.58\textheight,keepaspectratio]{Fig/tradeoff_tempo_qualidade.pdf}
+        \caption{Compromisso entre tempo médio de execução e RPD médio, em escala bi-logarítmica, por dataset (A, B e X) e no consolidado (Geral, 30 sementes). A linha tracejada indica a fronteira de Pareto do consolidado e apenas liga seus dois pontos, sem representar configurações intermediárias.}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Análise Heurísticas Construtivas}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth,height=0.5\textheight,keepaspectratio]{Fig/unidades_corredores_construtivas.pdf}
+        \caption{Unidades coletadas (a) e corredores visitados (b), em escala logarítmica, por instância das heurísticas construtivas em cada dataset. Os losangos brancos indicam a média.}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Refinamento do \textit{AisleBased} pelo ILS-VND}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth,height=0.6\textheight,keepaspectratio]{Fig/refinamento_ils_vnd.pdf}
+        \caption{Redução do RPD promovida pelo ILS-VND a partir da solução inicial do \textit{AisleBased} nas 22 instâncias em que o RPD inicial excedia 1\%. Os triângulos azuis representam a solução inicial $s_0$ e os círculos vermelhos, a média das soluções finais $s^\ast$ (30 sementes).}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{ILS-VND $\times$ Santos e Baldotto (2025)}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth,height=0.62\textheight,keepaspectratio]{Fig/boxplot_metaheuristicas.pdf}
+        \caption{Distribuição do RPD médio por instância do ILS-VND e do método de referência Santos e Baldotto (2025) em cada dataset (30 sementes). Os losangos brancos indicam a média amostral.}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Comparação com a referência}
+    \begin{table}
+        \centering
+        \caption{Comparação par a par pelo teste de Wilcoxon pareado sobre o RPD médio por instância ($N = 50$), com ajuste de Holm. Teste global de Friedman, corrigido para empates: $\chi^2_F(2) = \text{57,32}$, $p < \text{0,001}$.}
+        \resizebox{\textwidth}{!}{%
+            \begin{tabular}{l r r r r r}
+                \toprule
+                \textbf{Comparação (A $\times$ B)}    & \textbf{Instâncias com diferença} & \textbf{Empates} & \textbf{Vitórias A / B} & \textbf{$r_{rb}$} & \textbf{$p$ (Holm)} \\
+                \midrule
+                Santos e Baldotto $\times$ ILS-VND    & 18                                & 32               & 13 / 5                  & 0,58              & 0,031               \\
+                Santos e Baldotto $\times$ AisleBased & 34                                & 16               & 34 / 0                  & 1,00              & $<\text{0,001}$     \\
+                ILS-VND $\times$ AisleBased           & 33                                & 17               & 33 / 0                  & 1,00              & $<\text{0,001}$     \\
+                \bottomrule
+            \end{tabular}%
+        }
+
+        \medskip
+        {\scriptsize Em cada par, A é o algoritmo de melhor ranking médio de Friedman, e $r_{rb} > 0$ favorece A. Diferenças relativas de até 0,01\% no objetivo são tratadas como empate e não entram no teste.\par}
+    \end{table}
+\end{frame}
+
+\begin{frame}{Novas MSC: B/0012 e B/0013}
+    \begin{table}
+        \centering
+        \caption{Corredores, unidades coletadas e função objetivo nas instâncias B/0012 e B/0013 (30 sementes).}
+        \resizebox{\textwidth}{!}{%
+            \begin{tabular}{l l r r r r r c}
+                \toprule
+                                                 &                          &                     & \multicolumn{2}{c}{\textbf{Unidades}} & \multicolumn{2}{c}{\textbf{$f$}} &                                                                        \\
+                \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+                \textbf{Instância}               & \textbf{Algoritmo}       & \textbf{Corredores} & \textbf{Méd.}                         & \textbf{Máx.}                    & \textbf{Méd.}   & \textbf{Máx.}   & \textbf{MSC}                       \\
+                \midrule
+                \multirow{3}{*}{\textbf{B/0012}} & \textit{AisleBased}      & 11                  & 6.244,0                               & 6.244                            & 567,64          & 567,64          & \multirow{3}{*}{567,64 (6.244/11)} \\
+                                                 & \textbf{ILS-VND}         & 11                  & \textbf{6.245,9}                      & \textbf{6.252}                   & \textbf{567,81} & \textbf{568,36} &                                    \\
+                                                 & Santos e Baldotto (2025) & 11                  & 6.244,0                               & 6.244                            & 567,64          & 567,64          &                                    \\
+                \midrule
+                \multirow{3}{*}{\textbf{B/0013}} & \textit{AisleBased}      & 9                   & 6.761,0                               & 6.761                            & 751,22          & 751,22          & \multirow{3}{*}{757,00 (6.813/9)}  \\
+                                                 & \textbf{ILS-VND}         & 9                   & \textbf{6.814,0}                      & \textbf{6.814}                   & \textbf{757,11} & \textbf{757,11} &                                    \\
+                                                 & Santos e Baldotto (2025) & 9                   & 6.811,0                               & 6.811                            & 756,78          & 756,78          &                                    \\
+                \bottomrule
+            \end{tabular}%
+        }
     \end{table}
 \end{frame}
 
 % ============================================================
-\section{Metodologia}
+\section{Conclusões}
 % ============================================================
 
-\begin{frame}{Algoritmo Guloso}
+\begin{frame}{Conclusões e trabalhos futuros}
     \small
-    \textbf{Etapa 1: Seleção de Pedidos}
-    \begin{enumerate}
-        \item Ordenar pedidos pelo critério configurável (\texttt{order})
-        \item Incorporar pedidos enquanto $\leq$ UB e há estoque
-    \end{enumerate}
-
-    \bigskip
-    \textbf{Etapa 2: Seleção de Corredores}
+    \textbf{Conclusões}
     \begin{itemize}
-        \item \textbf{Simples} (\texttt{simple}): pontuação estática, ordenação única
-        \item \textbf{Adaptativa} (\texttt{multi}): pontuação recalculada a cada iteração
-        \item \textbf{Exata} (\texttt{exact}): minimiza $|\mathcal{A}'|$
-    \end{itemize}
-\end{frame}
-
-\begin{frame}{Variações do Algoritmo Guloso}
-    \small
-    \textbf{Critérios de ordenação de pedidos:}
-    \begin{itemize}
-        \item Aleatória
-        \item Total de Unidades (Crescente e Decrescente)
-        \item Similaridade de Jaccard (similar e diferente)
-              \begin{itemize}
-                  \item Ponderada e não ponderada
-                  \item Pedido-semente: aleatório, maior, menor ou mais compartilhado
-              \end{itemize}
+        \item Escolher corredores primeiro: RPD de 81,47\% para 3,70\%
+        \item ILS-VND sem \textit{solver}: RPD de 0,18\% e MSC em 36/50
+        \item Próximo da referência e novas MSC em B/0012 e B/0013
     \end{itemize}
 
     \medskip
-    Resultando em um total de \textbf{57 variações}
-\end{frame}
-
-\begin{frame}{Experimentos}
-    \small
-    \textbf{Fase 1: Filtragem (PFC I)}
+    \textbf{Limitações e trabalhos futuros}
     \begin{itemize}
-        \item \textbf{Dataset A}: 20 instâncias de menor porte
-        \item \textbf{5 réplicas} por variação
-        \item Objetivo: identificar variações promissoras
-        \item \textit{Gap} relativo: $\frac{f^* - f}{f^*}$, onde $f^*$ é a
-              Melhor Solução Conhecida (MSC) do desafio
-        \item Critério: Fronteira de Pareto (\textit{gap} $\times$ tempo)
+        \item Comparar sob o mesmo paralelismo e com outras abordagens
+        \item Hibridizar o ILS-VND com métodos exatos
     \end{itemize}
-    \textbf{Fase 2: Avaliação (PFC II)}
-    \begin{itemize}
-        \item \textbf{Datasets B e X}: instâncias de maior porte
-        \item Candidatos selecionados + novos algoritmos
-        \item Análise estatística dos resultados
-    \end{itemize}
-\end{frame}
-
-% ============================================================
-\section{Resultados}
-% ============================================================
-
-\begin{frame}{Visão Geral}
-    \begin{center}
-        \includegraphics[width=\textwidth]{Fig/simple_gap_vs_exec_time.png}
-    \end{center}
-\end{frame}
-
-\begin{frame}{Seleção de Corredores}
-    \begin{center}
-        \includegraphics[width=\textwidth]{Fig/gap_greedy_type.png}
-    \end{center}
-\end{frame}
-
-\begin{frame}{Ordenação de Pedidos}
-    \begin{center}
-        \includegraphics[width=\textwidth]{Fig/gap_order_type.png}
-    \end{center}
-\end{frame}
-
-\begin{frame}{Fronteira de Pareto}
-    \begin{center}
-        \includegraphics[width=\textwidth]{Fig/simple_pareto.png}
-    \end{center}
-\end{frame}
-
-% ============================================================
-\section{Discussão}
-% ============================================================
-
-\begin{frame}{Discussão dos Resultados}
-    \small
-    \begin{itemize}
-        \item Ordenação decrescente como fator dominante na qualidade
-
-        \item Seleção de corredores $\Rightarrow$ \textit{trade-off} controlável
-
-        \item Soluções capturam $\approx 30\%$ da MSC
-              \begin{itemize}
-                  \item Esperado para heurísticas construtivas
-              \end{itemize}
-        \item Similaridade não superou ordenação por volume
-    \end{itemize}
-\end{frame}
-
-% ============================================================
-\section{Conclusão e Próximos Passos}
-% ============================================================
-
-\begin{frame}{Próximos Passos}
-    \begin{enumerate}
-        \item Heurísticas por seleção de corredores
-        \item Meta-heurísticas
-        \item Fase 2 dos experimentos
-    \end{enumerate}
 \end{frame}
 
 % ---- Agradecimentos ----
