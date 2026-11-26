@@ -60,7 +60,7 @@
 % ---------- 4. Refinamento ----------
 \node[pq, right=2.3cm of pare.east |- abre, text width=2.7cm] (pod1) {Podar corredores};
 \node[pq, below=of pod1, text width=2.7cm] (troca) {Trocar pedidos por maiores};
-\node[pq, below=of troca, text width=2.7cm] (pod2) {Podar corredores};
+\node[pq, below=of troca, text width=2.7cm] (pod2) {Podar corredores novamente};
 \begin{scope}[on background layer]
   \node[etapa, fit=(pod1)(troca)(pod2)] (e4) {};
 \end{scope}
