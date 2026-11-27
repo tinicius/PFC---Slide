@@ -55,9 +55,9 @@
 \draw[seta] (lb) -- node[right, font=\footnotesize] {não} (nada);
 
 % ---------- 3. Cobrir a demanda com corredores ----------
-\node[pq, right=2.0cm of lb.east |- prox, text width=3.0cm] (sim) {Guloso estático (\textit{simple})};
-\node[pq, below=of sim, text width=3.0cm] (mul) {Guloso dinâmico (\textit{multi})};
-\node[pq, below=of mul, text width=3.0cm] (exa) {Cobertura mínima (\textit{exact}, B\&B, 30 s)};
+\node[pq, right=2.0cm of lb.east |- prox, text width=3.0cm] (sim) {Guloso estático};
+\node[pq, below=of sim, text width=3.0cm] (mul) {Guloso dinâmico};
+\node[pq, below=of mul, text width=3.0cm] (exa) {Cobertura mínima};
 \begin{scope}[on background layer]
   \node[etapa, fit=(sim)(mul)(exa)] (e3) {};
 \end{scope}

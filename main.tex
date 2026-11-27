@@ -44,7 +44,7 @@
       leftskip=0.4cm,rightskip=0.5cm]{author in head/foot}
     \hbox to \paperwidth{%
       \scriptsize Vinicius A. Pereira \quad|\quad
-      PFC II -   CEFET-MG \hfill
+      PFC II -- CEFET-MG \hfill
       Slide \insertframenumber{} de \inserttotalframenumber%
       \hspace{0.4cm}
     }%
@@ -87,9 +87,9 @@
     \begin{columns}[c]
         \begin{column}{0.52\textwidth}
             \begin{itemize}
-                \item \textit{E-commerce} brasileiro: R\$ 160,3 bi no 1º semestre de 2024 (+18,7\%)
+                \item \textit{E-commerce} brasileiro: R\$ 160,3 bi no 1º semestre de 2024
                 \item \textit{Picking} responde por até 55\% do custo operacional do armazém
-                \item Cerca de metade do tempo do operador é deslocamento
+                \item Cerca de metade do tempo do operador é gasto em deslocamento
             \end{itemize}
         \end{column}
         \begin{column}{0.45\textwidth}
@@ -112,6 +112,7 @@
     \begin{itemize}
         \item Problema fracionário de seleção de pedidos (PSP)
         \item Instâncias propostas para o desafio
+        \item Melhores Soluções Conhecidas (MSC)
     \end{itemize}
 \end{frame}
 
@@ -160,7 +161,7 @@
 \begin{frame}{Objetivos}
     \footnotesize
     \textbf{Objetivo Geral:} Implementar e avaliar experimentalmente abordagens heurísticas e
-    meta-heurísticas para o Problema de Seleção de Pedidos Ótima (PSP) com as
+    meta-heurísticas para o Problema Fracionário de Seleção de Pedidos Ótima (PSP) com as
     instâncias reais do Desafio SBPO 2025 como \textit{benchmark} padronizado.
 
     \medskip
@@ -246,7 +247,7 @@
     \[
         \text{RPD} = \frac{f^\ast - f}{f^\ast} \times 100\%
     \]
-    $f^\ast$: Melhor Solução Conhecida (MSC);
+    $f^\ast$: Melhor Solução Conhecida (MSC).
 
     $f$: objetivo obtido pelo algoritmo.
 
@@ -321,15 +322,15 @@
     \begin{figure}
         \centering
         \includegraphics[width=\textwidth,height=0.58\textheight,keepaspectratio]{Fig/tradeoff_tempo_qualidade.pdf}
-        \caption{Compromisso entre tempo médio de execução e RPD médio, em escala bi-logarítmica, por dataset (A, B e X) e no consolidado (Geral, 30 sementes). A linha tracejada indica a fronteira de Pareto do consolidado e apenas liga seus dois pontos, sem representar configurações intermediárias.}
+        \caption{Compromisso entre tempo médio de execução e RPD médio, em escala bilogarítmica, por dataset (A, B e X) e no consolidado (Geral, 30 sementes). A linha tracejada indica a fronteira de Pareto do consolidado e apenas liga seus dois pontos, sem representar configurações intermediárias.}
     \end{figure}
 \end{frame}
 
-\begin{frame}{Análise Heurísticas Construtivas}
+\begin{frame}{Análise das heurísticas construtivas}
     \begin{figure}
         \centering
         \includegraphics[width=\textwidth,height=0.5\textheight,keepaspectratio]{Fig/unidades_corredores_construtivas.pdf}
-        \caption{Unidades coletadas (a) e corredores visitados (b), em escala logarítmica, por instância das heurísticas construtivas em cada dataset. Os losangos brancos indicam a média.}
+        \caption{Unidades coletadas (a) e corredores visitados (b) por instância pelas heurísticas construtivas, em cada dataset (escala logarítmica). Os losangos brancos indicam a média.}
     \end{figure}
 \end{frame}
 
@@ -359,14 +360,14 @@
                 \textbf{Comparação (A $\times$ B)}    & \textbf{Instâncias com diferença} & \textbf{Empates} & \textbf{Vitórias A / B} & \textbf{$r_{rb}$} & \textbf{$p$ (Holm)} \\
                 \midrule
                 Santos e Baldotto $\times$ ILS-VND    & 18                                & 32               & 13 / 5                  & 0,58              & 0,031               \\
-                Santos e Baldotto $\times$ AisleBased & 34                                & 16               & 34 / 0                  & 1,00              & $<\text{0,001}$     \\
-                ILS-VND $\times$ AisleBased           & 33                                & 17               & 33 / 0                  & 1,00              & $<\text{0,001}$     \\
+                Santos e Baldotto $\times$ \textit{AisleBased} & 34                                & 16               & 34 / 0                  & 1,00              & $<\text{0,001}$     \\
+                ILS-VND $\times$ \textit{AisleBased} & 33                                & 17               & 33 / 0                  & 1,00              & $<\text{0,001}$     \\
                 \bottomrule
             \end{tabular}%
         }
 
         \medskip
-        {\scriptsize Em cada par, A é o algoritmo de melhor ranking médio de Friedman, e $r_{rb} > 0$ favorece A. Diferenças relativas de até 0,01\% no objetivo são tratadas como empate e não entram no teste.\par}
+        {\scriptsize Em cada par, A é o algoritmo de melhor \textit{ranking} médio de Friedman, e $r_{rb} > 0$ favorece A. Diferenças relativas de até 0,01\% no objetivo são tratadas como empate e não entram no teste.\par}
     \end{table}
 \end{frame}
 
@@ -402,16 +403,16 @@
     \small
     \textbf{Conclusões}
     \begin{itemize}
-        \item Escolher corredores primeiro: RPD de 81,47\% para 3,70\%
-        \item ILS-VND sem \textit{solver}: RPD de 0,18\% e MSC em 36/50
-        \item Próximo da referência e novas MSC em B/0012 e B/0013
+        \item Diferentes abordagens heurísticas: RPD de 81,47\% (\textit{OrderBased}) para 3,70\% (\textit{AisleBased})
+        \item ILS-VND: RPD de 0,18\%, MSC em 36/50 e RPD $\le 1\%$ em 47/50
+        \item Novas MSC em B/0012 e B/0013
     \end{itemize}
 
     \medskip
     \textbf{Limitações e trabalhos futuros}
     \begin{itemize}
-        \item Comparar sob o mesmo paralelismo e com outras abordagens
-        \item Hibridizar o ILS-VND com métodos exatos
+        \item Experimentar outras abordagens meta-heurísticas
+        \item Melhorias no algoritmo (paralelismo e métodos exatos)
     \end{itemize}
 \end{frame}
 
@@ -427,7 +428,7 @@
         Orientador: Prof.\ Ms.\ Eduardo Gabriel Reis Miranda \\
         Coorientador: Prof.\ Dr.\ André Luiz Maravilha Silva \\[0.5cm]
         Centro Federal de Educação Tecnológica de Minas Gerais \\
-        Campus Divinópolis 2026
+        Campus Divinópolis -- 2026
         \vfill
     \end{center}
 \end{frame}

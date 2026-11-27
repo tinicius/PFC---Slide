@@ -28,7 +28,7 @@
          tier/.style={bloco, minimum height=0.8cm, text width=3.6cm, fill=white}}
 
 % ---------- 2. Ciclo ILS (definido primeiro para alinhar) ----------
-\node[pq, text width=4.6cm] (pert) {\textbf{Perturbar} $s_{\text{cur}}$: remove corredores pouco eficientes e adiciona promissores (RCL, $\alpha$)};
+\node[pq, text width=4.6cm] (pert) {\textbf{Perturbar} $s_{\text{cur}}$: remover corredores pouco eficientes e adicionar promissores (RCL, $\alpha$)};
 \node[pq, below=of pert, text width=4.6cm] (vnd) {\textbf{VND} sobre a solução perturbada $\to s''$};
 \node[pq, below=of vnd, text width=4.6cm] (acc) {\textbf{Aceitar} $s''$ se não piorar mais que $\tau$ (1\%); atualizar $s^\ast$ se melhorar};
 \node[decisao, below=0.45cm of acc] (cont) {Tempo e\\estagnação\\no limite?};

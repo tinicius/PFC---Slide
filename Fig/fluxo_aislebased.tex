@@ -27,8 +27,8 @@
 \tikzset{pq/.style={bloco, minimum height=0.9cm}}
 
 % ---------- 1. Escolher estratégia de corredores ----------
-\node[pq, text width=3.6cm] (est) {\textbf{Estática} ($\times 4$): \textit{units}, \textit{variety}, \textit{mixed}, \textit{useful} (\textit{ranking} fixo)};
-\node[pq, right=0.3cm of est, text width=3.0cm] (din) {\textbf{Dinâmica}: \textit{useful} sobre a demanda residual};
+\node[pq, text width=3.6cm] (est) {\textbf{Estática}: Ordenação Inicial, 4 variações};
+\node[pq, right=0.3cm of est, text width=3.0cm] (din) {\textbf{Dinâmica}: Ordena sobre a demanda residual};
 \begin{scope}[on background layer]
   \node[etapa, fit=(est)(din)] (e1) {};
 \end{scope}
@@ -60,13 +60,11 @@
 % ---------- 4. Refinamento ----------
 \node[pq, right=2.3cm of pare.east |- abre, text width=2.7cm] (pod1) {Podar corredores};
 \node[pq, below=of pod1, text width=2.7cm] (troca) {Trocar pedidos por maiores};
-\node[pq, below=of troca, text width=2.7cm] (pod2) {Podar corredores novamente};
 \begin{scope}[on background layer]
-  \node[etapa, fit=(pod1)(troca)(pod2)] (e4) {};
+  \node[etapa, fit=(pod1)(troca)] (e4) {};
 \end{scope}
 \node[rotetapa] at (e4.north west) {4. Refinamento};
 \draw[seta] (pod1) -- (troca);
-\draw[seta] (troca) -- (pod2);
 \draw[seta] (pare.east) -- node[above, font=\footnotesize] {não} (pare.east -| e4.west);
 
 \node[fim, below=0.7cm of e4, text width=3.0cm] (res) {Melhor solução:\\$\dfrac{\text{unidades}}{|\text{corredores}|}$};
